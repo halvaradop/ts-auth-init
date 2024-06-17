@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
-    "link": "npm unlink auth-init && chmod +x dist/index.js && npm link auth-init"
+    "link": "npm unlink auth-init && chmod +x dist/index.js && npm link auth-init",
+    "uninstall": "npm uninstall @auth/express @auth/sveltekit next-auth",
+    "start": "rm -rf auth.js && npm run uninstall && node dist/index.js"
   },
   "type": "module",
   "keywords": [
@@ -34,7 +36,9 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "inquirer": "^9.2.23"
+    "@auth/sveltekit": "^1.2.0",
+    "inquirer": "^9.2.23",
+    "nanospinner": "^1.1.0"
   },
   "files": [
     "dist"

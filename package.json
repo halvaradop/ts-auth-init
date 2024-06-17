@@ -1,0 +1,42 @@
+{
+  "name": "auth-init",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "description": "CLI tool to initialize a project with auth.js",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc",
+    "link": "npm unlink auth-init && chmod +x dist/index.js && npm link auth-init"
+  },
+  "type": "module",
+  "keywords": [
+    "auth.js",
+    "cli",
+    "tool",
+    "initializer",
+    "security",
+    "authentication",
+    "authorization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halvaradop/auth-init-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/halvaradop/auth-init/issues"
+  },
+  "homepage": "https://github.com/halvaradop/auth-init#readme",
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.14.3",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "inquirer": "^9.2.23"
+  },
+  "files": [
+    "dist"
+  ]
+}

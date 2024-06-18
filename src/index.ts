@@ -1,31 +1,26 @@
 #! /usr/bin/env node
 
-import inquirer from "inquirer"
+import { select, confirm, input } from "@inquirer/prompts"
 import { initializeAuth } from "./utils.js"
+import { Framework } from "./types.js"
 
 
-const framework = await inquirer.prompt({
-    name: "framework",
+const framework = await select({
     message: "Select the framework that you will use in your project",
-    type: "list",
     choices: [
-        "NextJs",
-        "SvelteKit",
-        "Express"
+        { name: "NextJs", value: "NextJs" },
+        { name: "SvelteKit", value: "SvelteKit" },
+        { name: "Express", value: "Express" },
     ]
 })
 
-const configuration = await inquirer.prompt({
-    name: "configuration",
+const configuration = await confirm({
     message: "You want to create file configuration ?",
-    type: "confirm"
 })
 
-const fileName = await inquirer.prompt({
-    name: "fileName",
+const fileName = await input({
     message: "Name of the configuration file",
-    type: "input",
     default: "auth.ts"
 })
 
-initializeAuth(framework.framework)
+initializeAuth(framework as Framework, configuration, fileName)

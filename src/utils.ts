@@ -38,8 +38,8 @@ export const frameworkInstall: Record<Framework, string> = {
  * 
  * @param framework the configuration of the framework
  */
-export const initializeAuth = async (framework: Framework) => {
-    const authConfigPath = path.join(ROOT, "auth.ts")
+export const initializeAuth = async (framework: Framework, create: boolean, fileName: string) => {
+    const authConfigPath = path.join(ROOT, fileName)
     const code = frameworkCode[framework]
     const install = frameworkInstall[framework]
     const spinner = createSpinner(`Installing ${framework} package.`).start()
@@ -49,13 +49,15 @@ export const initializeAuth = async (framework: Framework) => {
         text: "The package was installed success"
     })
 
-    if(!fs.existsSync("auth.ts")) {
-        fs.writeFileSync(authConfigPath, code, {
-            flag: "w",
-            encoding: "utf-8"
-        })
-    } else {
-        console.log("The auth.file ready exist.")
+    if(create) {
+        if(!fs.existsSync(authConfigPath)) {
+            fs.writeFileSync(authConfigPath, code, {
+                flag: "w",
+                encoding: "utf-8"
+            })
+        } else {
+            console.log("The auth.file ready exist.")
+        }
     }
 }
 

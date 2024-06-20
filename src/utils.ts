@@ -42,11 +42,11 @@ export const initializeAuth = async (framework: Framework, create: boolean, file
     const authConfigPath = path.join(ROOT, fileName)
     const code = frameworkCode[framework]
     const install = frameworkInstall[framework]
-    const spinner = createSpinner(`Installing ${framework} package.`).start()
+    const spinner = createSpinner(`Installing ${framework} package`).start()
     
     await executeComamnd(install)
     spinner.success({
-        text: "The package was installed success"
+        text: "The package was installed successfully"
     })
 
     if(create) {
@@ -56,7 +56,7 @@ export const initializeAuth = async (framework: Framework, create: boolean, file
                 encoding: "utf-8"
             })
         } else {
-            console.log("The auth.file ready exist.")
+            console.log("The auth.file already exists")
         }
     }
 }

@@ -11,7 +11,7 @@
     "build": "tsc",
     "link": "npm unlink @halvaradop/auth-init && chmod +x dist/index.js && npm link @halvaradop/auth-init",
     "uninstall": "npm uninstall @auth/express @auth/sveltekit next-auth",
-    "start": "rm -rf auth.js && npm run uninstall && node dist/index.js"
+    "start": "(rm -rf auth.js | true) && (rm -rf .env* | true) && npm run uninstall && node dist/index.js"
   },
   "type": "module",
   "keywords": [
@@ -40,7 +40,9 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^5.0.5",
-    "nanospinner": "^1.1.0"
+    "commander": "^12.1.0",
+    "nanospinner": "^1.1.0",
+    "next-auth": "^5.0.0-beta.19"
   },
   "files": [
     "dist"

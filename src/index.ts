@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 
 import { select, confirm, input } from "@inquirer/prompts"
-import { initializeAuth } from "./utils.js"
 import { Framework } from "./types.js"
+import { initializeAuth } from "./commands/init.js"
 
 
 const framework = await select({

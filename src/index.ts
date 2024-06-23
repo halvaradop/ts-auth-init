@@ -2,9 +2,10 @@
 
 import "dotenv/config.js"
 import { select, confirm, input } from "@inquirer/prompts"
-import { Framework } from "./types.js"
+import { FlagOptions, Framework } from "./types.js"
 import { initializeAuth } from "./commands/auth.js"
-
+import { Command } from "commander"
+import { setEnvironment } from "./commands/environment.js"
 
 const framework = await select<Framework>({
     message: "Select the framework that you will use in your project",
@@ -24,4 +25,20 @@ const fileName = await input({
     default: "auth.ts"
 })
 
+const program = new Command()
+
+program
+    .name("auth-init")
+    .description("Initializer a project with Auth.js")
+    .version("0.0.1")
+
+program
+    .option("-s, --secret", "Generate the secret key")
+    .action(async (flags: FlagOptions) => {
+        if(flags.secret) {
+            await setEnvironment()
+        }
+    })
+
+program.parseAsync(process.argv)
 initializeAuth(framework, configuration, fileName)

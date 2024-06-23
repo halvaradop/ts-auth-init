@@ -36,6 +36,7 @@
   "devDependencies": {
     "@types/inquirer": "^9.0.7",
     "@types/node": "^20.14.3",
+    "dotenv": "^16.4.5",
     "typescript": "^5.4.5"
   },
   "dependencies": {

@@ -11,16 +11,16 @@ import { execAsync, ROOT } from "../utils.js"
  */
 export const setEnvironment = async () => {
     const environmentPath = path.join(ROOT, ".env")
-    const spinner = createSpinner("Setting up the environment variables of the project").start()
-    const randomized = await getRandonSecret()
-    if(!fs.existsSync(environmentPath)) {
-        fs.writeFileSync(environmentPath, `AUTH_SECRET=${randomized}`)
-    } else {
-        fs.appendFileSync(environmentPath, `AUTH_SECRET=${randomized}`)
+    const existVariable = process.env.AUTH_SECRET ?? process.env.NEXT_AUTH
+
+    if(!existVariable) {
+        const spinner = createSpinner("Setting up the environment variables of the project").start()
+        const randomized = await getRandonSecret()
+        fs.writeFile(environmentPath, `AUTH_SECRET=${randomized}`, () => {})
+        spinner.success({ text: "The environments was established" })
+        return "The AUTH_SECRET variable was created"
     }
-    spinner.success({
-        text: "The environments was established"
-    })
+    return "The AUTH_SECRENT already exist"
 }
 
 
@@ -31,6 +31,10 @@ export const setEnvironment = async () => {
  * @returns {Promise<string>} The generated secret key
  */
 const getRandonSecret = async () => {
-    const { stdout } = await execAsync("openssl rand -base64 33")
-    return stdout
+    try {
+        const { stdout } = await execAsync("openssl rand -base64 33")
+        return stdout
+    } catch(error) {
+        console.log("Happen an error to generate the secret key")
+    }
 }

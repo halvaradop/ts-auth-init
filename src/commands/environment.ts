@@ -9,18 +9,21 @@ import { execAsync, ROOT } from "../utils.js"
  * the AUTH_SECRET variable. This is mandatory for using auth.js without considering
  * the framework.
  */
-export const setEnvironment = async () => {
+export const setEnvironment = async (): Promise<void> => {
     const environmentPath = path.join(ROOT, ".env")
     const existVariable = process.env.AUTH_SECRET ?? process.env.NEXT_AUTH
 
     if(!existVariable) {
         const spinner = createSpinner("Setting up the environment variables of the project").start()
-        const randomized = await getRandonSecret()
-        fs.writeFile(environmentPath, `AUTH_SECRET=${randomized}`, () => {})
-        spinner.success({ text: "The environments was established" })
-        return "The AUTH_SECRET variable was created"
+        try {
+            const randomized = await getRandonSecret()
+            fs.writeFileSync(environmentPath, `AUTH_SECRET=${randomized}`)
+            spinner.success({ text: "The AUTH_SECRET variable was created" })
+        } catch(error) {
+            spinner.error({ text: "An error occurred while generating the secret key" })
+        }
     }
-    return "The AUTH_SECRENT already exist"
+    createSpinner("The AUTH_SECRENT already exists").warn()
 }
 
 
@@ -31,10 +34,6 @@ export const setEnvironment = async () => {
  * @returns {Promise<string>} The generated secret key
  */
 const getRandonSecret = async () => {
-    try {
-        const { stdout } = await execAsync("openssl rand -base64 33")
-        return stdout
-    } catch(error) {
-        console.log("Happen an error to generate the secret key")
-    }
+    const { stdout } = await execAsync("openssl rand -base64 33")
+    return stdout
 }

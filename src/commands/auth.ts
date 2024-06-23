@@ -26,8 +26,8 @@ export const initializeAuth = async (framework: Framework, create: boolean, file
         text: "The package was installed successfully"
     })
 
-    if(create) {
-        if(!fs.existsSync(authConfigPath)) {
+    if (create) {
+        if (!fs.existsSync(authConfigPath)) {
             fs.writeFileSync(authConfigPath, code, {
                 flag: "w",
                 encoding: "utf-8"

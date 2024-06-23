@@ -1,7 +1,5 @@
-import fs from "fs"
-import path from "path"
 import { createSpinner } from "nanospinner"
-import { execAsync, ROOT } from "../utils.js"
+import { execAsync, writeConfig } from "../utils.js"
 import { Framework } from "../types.js"
 import { frameworkCode, frameworkInstall } from "./frameworks.js"
 
@@ -16,24 +14,27 @@ import { frameworkCode, frameworkInstall } from "./frameworks.js"
  * @param framework the configuration of the framework
  */
 export const initializeAuth = async (framework: Framework, create: boolean, fileName: string) => {
-    const authConfigPath = path.join(ROOT, fileName)
-    const code = frameworkCode[framework]
+    installFrameworkAuth(framework)
+    const configFramework = frameworkCode[framework]
+    if (create) {
+        configFramework.map(({ path, content }) => writeConfig(path, content))
+    }
+}
+
+
+/**
+ * Installs the necessary dependencies for the selected framework
+ * from the terminal.
+ * 
+ * @param framework The framework chosen by the user
+ */
+export const installFrameworkAuth = async (framework: Framework): Promise<void> => {
     const install = frameworkInstall[framework]
     const spinner = createSpinner(`Installing ${framework} package`).start()
-    
-    await execAsync(install)
-    spinner.success({
-        text: "The package was installed successfully"
-    })
-
-    if (create) {
-        if (!fs.existsSync(authConfigPath)) {
-            fs.writeFileSync(authConfigPath, code, {
-                flag: "w",
-                encoding: "utf-8"
-            })
-        } else {
-            return "The auth.file already exists"
-        }
+    try {
+        await execAsync(install)
+        spinner.success({ text: "The package was installed successfully" })
+    } catch(error) {
+        spinner.error({ text: "An error occurred while installing the package" })
     }
 }

@@ -1,11 +1,12 @@
 #! /usr/bin/env node
 
+import "dotenv/config.js"
 import { select, confirm, input } from "@inquirer/prompts"
 import { Framework } from "./types.js"
-import { initializeAuth } from "./commands/init.js"
+import { initializeAuth } from "./commands/auth.js"
 
 
-const framework = await select({
+const framework = await select<Framework>({
     message: "Select the framework that you will use in your project",
     choices: [
         { name: "NextJs", value: "NextJs" },
@@ -23,4 +24,4 @@ const fileName = await input({
     default: "auth.ts"
 })
 
-initializeAuth(framework as Framework, configuration, fileName)
+initializeAuth(framework, configuration, fileName)

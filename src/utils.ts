@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from "path"
 import { promisify } from "util"
 import { exec } from "child_process"
+import { createSpinner } from 'nanospinner';
+
 
 /**
  * Create a promise to execute the command for installing
@@ -42,17 +44,43 @@ export const writeConfig = (route: string, content: string): void => {
     const relative = path.relative(ROOT, route).split("\\")
     relative.forEach(routePath => {
         root = path.join(root, routePath)
-        if(!fs.existsSync(root)) {
-            if(!routePath.match(".(js|ts)")) {
-                if(!fs.existsSync(root)) {
+        if (!fs.existsSync(root)) {
+            if (!routePath.match(".(js|ts)")) {
+                if (!fs.existsSync(root)) {
                     fs.mkdirSync(root, { recursive: true })
                 }
             } else {
                 fs.writeFileSync(route, content, {
-                    flag: "w",
+                    flag: "a",
                     encoding: "utf-8"
                 })
             }
         }
     })
+}
+
+
+/**
+ * Sets up the environment variables used throughout the project, initially creating
+ * the AUTH_SECRET variable. This is mandatory for using auth.js without considering
+ * the framework.
+ */
+export const setEnvironment = async (envName: string, value: string): Promise<void> => {
+    const environmentPath = configPath(".env")
+    const existVariable = process.env[envName]
+
+    if (!existVariable) {
+        const spinner = createSpinner("Setting up the environment variables of the project").start()
+        try {
+            fs.appendFileSync(environmentPath, `${envName}=${value}\r\n`, {
+                flag: "a",
+                encoding: "utf-8",                
+            })
+            spinner.success({ text: `${envName} variable was created` })
+        } catch (error) {
+            spinner.error({ text: "An error occurred while generating the secret key" })
+        }
+        return
+    }
+    createSpinner(`The ${envName} already exists`).warn()
 }

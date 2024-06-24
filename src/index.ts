@@ -3,8 +3,8 @@
 import "dotenv/config.js"
 import { FlagOptions } from "./types.js"
 import { Command } from "commander"
-import { setEnvironment } from "./commands/environment.js"
-import { promptInitConfig } from "./prompts/init.js"
+import { setAuthConfigEnvironment } from "./commands/environment.js"
+import { promptInitProviders } from "./prompts/providers.js"
 
 
 /**
@@ -25,9 +25,13 @@ program
  */
 program
     .option("-s, --secret", "Generate the secret key")
+    .option("-p, --providers", "Select the provider to be initialized")
     .action(async (flags: FlagOptions) => {
         if(flags.secret) {
-            await setEnvironment()
+            await setAuthConfigEnvironment()
+        }
+        if(flags.providers) {
+            await promptInitProviders()
         }
     })
 
@@ -35,4 +39,4 @@ program
 * Parse the command line arguments
 */
 program.parseAsync(process.argv)
-promptInitConfig()
+//promptInitConfig()

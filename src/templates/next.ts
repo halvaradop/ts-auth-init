@@ -1,5 +1,5 @@
 
-export const codeNextBase = `
+export const getCodeNextBase = `
 import NextAuth from "next-auth"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -7,11 +7,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 })
 `
 
-export const codeNextHandler = `
-import { handlers } from "@/auth"
+
+export const getCodeNextHandler = (baseConfigPath: string): string => `
+import { handlers } from "@/${baseConfigPath}"
 export const { GET, POST } = handlers
 `
 
-export const codeNextMiddleware = `
-export { auth as middleware } from "@/auth"
+
+export const getCodeNextMiddleware = (baseConfigPath: string): string => `
+export { auth as middleware } from "@/${baseConfigPath}"
 `

@@ -5,6 +5,7 @@ import { FlagOptions } from "./types.js"
 import { Command } from "commander"
 import { setAuthConfigEnvironment } from "./commands/environment.js"
 import { promptInitProviders } from "./prompts/providers.js"
+import { promptInitConfig } from "./prompts/init.js"
 
 
 /**
@@ -18,7 +19,7 @@ const program = new Command()
 program
     .name("auth-init")
     .description("Initializer a project with Auth.js")
-    .version("0.0.1")
+    .version("0.0.2")
 
 /**
  * Configuration of CLI options and arguments
@@ -39,4 +40,4 @@ program
 * Parse the command line arguments
 */
 program.parseAsync(process.argv)
-//promptInitConfig()
+await promptInitConfig()

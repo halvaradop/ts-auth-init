@@ -5,6 +5,7 @@ import { FlagOptions } from "./types.js"
 import { Command } from "commander"
 import { setAuthConfigEnvironment } from "./commands/environment.js"
 import { promptInitProviders } from "./prompts/providers.js"
+import { promptInitConfig } from "./prompts/init.js"
 
 
 /**
@@ -39,4 +40,4 @@ program
 * Parse the command line arguments
 */
 program.parseAsync(process.argv)
-//promptInitConfig()
+await promptInitConfig()

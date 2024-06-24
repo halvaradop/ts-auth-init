@@ -6,3 +6,8 @@ logs/
 .env*.production
 .npmrc
 features.md
+auth.ts
+
+# NextConfiguration
+middleware.ts
+app/

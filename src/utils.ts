@@ -1,9 +1,10 @@
-import fs from 'fs';
+import fs from 'fs'
+import { readFile, writeFile } from "fs/promises"
 import path from "path"
 import { promisify } from "util"
 import { exec } from "child_process"
-import { createSpinner } from 'nanospinner';
-
+import { createSpinner } from 'nanospinner'
+import { ConfigBase } from './types.js'
 
 /**
  * Create a promise to execute the command for installing
@@ -62,10 +63,10 @@ export const writeConfig = (route: string, content: string): void => {
 
 /**
  * Sets up the environment variables used throughout the project, initially creating
- * the AUTH_SECRET variable. This is mandatory for using auth.js without considering
+ * the environment variables. This is mandatory for using auth.js without considering
  * the framework.
  */
-export const setEnvironment = async (envName: string, value: string): Promise<void> => {
+export const setEnvironment = async (envName: string, value: string): Promise<string> => {
     const environmentPath = configPath(".env")
     const existVariable = process.env[envName]
 
@@ -77,10 +78,80 @@ export const setEnvironment = async (envName: string, value: string): Promise<vo
                 encoding: "utf-8",                
             })
             spinner.success({ text: `${envName} variable was created` })
+            return value
         } catch (error) {
             spinner.error({ text: "An error occurred while generating the secret key" })
         }
-        return
+        return "ERROR"
     }
     createSpinner(`The ${envName} already exists`).warn()
+    return "ERROR"
+}
+
+
+/**
+ * Adds the import for a provider to the configuration file if it doesn't already exist.
+ *
+ * @param frameworkPath Path prefix for the provider import (based on framework).
+ * @param providerName The name of the provider to import (capitalized).
+ * @param baseConfigPath The name of the configuration file.
+ */
+export const addImportProviders = (frameworkPath: string, providerName: Capitalize<string>, baseConfigPath: string) => {
+    const readFile = fs.readFileSync(baseConfigPath, "utf-8")
+    const baseImport = `import ${providerName} from "${frameworkPath}/providers/${providerName.toLowerCase()}"`
+    if(containsInFile(readFile, baseImport)) return
+    
+    fs.writeFileSync(baseConfigPath, `${baseImport}\r\n${readFile}` , {
+        flag: "w",
+        encoding: "utf-8"
+    })
+}
+
+
+/**
+ * Checks if a string exists within a file line by line.
+ *
+ * @param {string} fileContent The content of the file to search.
+ * @param {string} searchString The string to search for.
+ * @returns {boolean} True if the search string exists in a line of the file, false otherwise.
+ */
+export const containsInFile = (fileContent: string, searchString: string): boolean => {
+    return fileContent.split(/\r?\n/).some(line => line.trim() === searchString.trim())
+}
+
+
+/**
+ * Reads the base configuration from the project's `config.json` file.
+ *
+ * @returns {Promise<ConfigBase>} A promise that resolves to the parsed configuration object.
+ * @throws {Error} If there's an error reading or parsing the JSON file.
+ */
+export const getConfiguration = async (): Promise<ConfigBase> => {
+    try {
+        const readContent = await readFile("./src/config.json", "utf-8")
+        return JSON.parse(readContent)
+    } catch(error) {
+        return setConfiguration({ framework: "NextJs", baseConfigPath: "auth.ts" })
+    }
+}
+
+
+/**
+ * Updates the project's base configuration in the `config.json` file.
+ *
+ * @param {ConfigBase} configBase The new configuration object to write.
+ * @returns {Promise<void>} A promise that resolves when the update is complete.
+ * @throws {Error} If there's an error writing to the JSON file.
+ */
+export const setConfiguration = async (configBase: ConfigBase): Promise<ConfigBase> => {
+    try {
+        const configJson = JSON.stringify(configBase, null, 2)
+        await writeFile("./src/config.json", configJson, {
+            flag: "w",
+            encoding: "utf-8"
+        })    
+        return configBase
+    } catch(error) {
+        return configBase
+    }
 }

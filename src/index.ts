@@ -12,6 +12,7 @@ import { promptInitConfig } from "./prompts/init.js"
  * Declare and initialize the program
  */
 const program = new Command()
+export const { framework, baseConfigPath } = await promptInitConfig()
 
 /**
  * 
@@ -32,7 +33,7 @@ program
             await setAuthConfigEnvironment()
         }
         if(flags.providers) {
-            await promptInitProviders()
+            await promptInitProviders(framework, baseConfigPath)
         }
     })
 
@@ -40,4 +41,3 @@ program
 * Parse the command line arguments
 */
 program.parseAsync(process.argv)
-await promptInitConfig()

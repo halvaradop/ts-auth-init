@@ -33,5 +33,5 @@ export const promptInitConfig = async () => {
     const framework = await selectFramework()
     const configuration = await confirmConfigurationCreation()
     const fileNameConfig = await fileName()
-    initializeAuth(framework, configuration, fileNameConfig)
+    return initializeAuth(framework, configuration, fileNameConfig)
 }

@@ -1,6 +1,6 @@
 import { createSpinner } from "nanospinner"
 import { execAsync, writeConfig } from "../utils.js"
-import { Framework } from "../types.js"
+import { ConfigBase, Framework } from "../types.js"
 import { frameworkInstall, getCodeByFramework } from "./frameworks.js"
 
 
@@ -15,15 +15,16 @@ import { frameworkInstall, getCodeByFramework } from "./frameworks.js"
  * 
  * @param {Framework} framework - The framework to initialize (NextJs, SvelteKit, Express).
  * @param {boolean} create - Whether to create configuration files.
- * @param {string} fileName - The name of the configuration file to be created.
+ * @param {string} baseConfigPath - The name of the configuration file to be created.
  * @returns {Promise<void>} A promise that resolves when the initialization is complete.
  */
-export const initializeAuth = async (framework: Framework, create: boolean, fileName: string): Promise<void> => {
+export const initializeAuth = async (framework: Framework, create: boolean, baseConfigPath: string): Promise<ConfigBase> => {
     installFrameworkAuth(framework)
-    const configFramework = getCodeByFramework(framework, fileName)
+    const configFramework = getCodeByFramework(framework, baseConfigPath)
     if (create) {
         configFramework.map(({ path, content }) => writeConfig(path, content))
     }
+    return { framework, baseConfigPath }
 }
 
 

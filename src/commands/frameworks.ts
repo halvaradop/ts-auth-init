@@ -1,17 +1,38 @@
-import { codeExpress } from "../templates/express.js"
-import { codeNextJs } from "../templates/next.js"
-import { codeSvelteKit } from "../templates/svelte.js"
-import { Framework } from "../types.js"
+import { codeExpressBase } from "../templates/express.js"
+import { getCodeNextBase, getCodeNextMiddleware, getCodeNextHandler } from "../templates/next.js"
+import { codeSvelteKitBase, codeSvelteKitHandler } from "../templates/svelte.js"
+import { Framework, PathFile } from "../types.js"
+
 
 /**
- * The code to be printed in the files at the moment
- * to create the auth.ts configuration file
+ * Generates code configuration based on the chosen framework and configuration file name.
+ * 
+ * This function takes the selected framework and the base configuration file name as input, 
+ * and returns an array of objects containing paths and content specific to the chosen framework.
+ * The base configuration file name is used dynamically within the generated code for relevant paths.
+ * 
+ * @param {Framework} framework The framework to get the code configuration for.
+ * @param {string} baseConfigPath The name of the configuration file.
+ * @returns The array of path and content objects for the specified framework.
  */
-export const frameworkCode: Record<Framework, string> = {
-    "NextJs": codeNextJs(),
-    "SvelteKit": codeSvelteKit(),
-    "Express": codeExpress()
+export const getCodeByFramework = (framework: Framework, baseConfigPath: string) => {
+    const frameworkCode: Record<Framework, PathFile[]> = {
+        "NextJs": [
+            { path: baseConfigPath, content: getCodeNextBase },
+            { path: "app/api/auth/[...nextauth]/route.ts", content: getCodeNextHandler(baseConfigPath) },
+            { path: "middleware.ts", content: getCodeNextMiddleware(baseConfigPath) }
+        ],
+        "SvelteKit": [
+            { path: baseConfigPath, content:  codeSvelteKitBase },
+            { path: "src/hooks.server.ts", content: codeSvelteKitHandler }
+        ],
+        "Express": [
+            { path: baseConfigPath, content: codeExpressBase }
+        ]
+    }
+    return frameworkCode[framework]
 }
+
 
 
 /**

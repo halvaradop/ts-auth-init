@@ -5,3 +5,4 @@ logs/
 .env*.local
 .env*.production
 .npmrc
+features.md

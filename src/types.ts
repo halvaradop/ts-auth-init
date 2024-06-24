@@ -12,3 +12,8 @@ export interface PathFile {
 }
 
 export type ArgsFunction = (...args: any) => void
+
+export interface ConfigBase {
+    framework: Framework,
+    baseConfigPath: string
+}

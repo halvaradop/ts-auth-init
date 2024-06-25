@@ -1,6 +1,5 @@
 import { rawlist } from "@inquirer/prompts"
-import { addImportProviders, setEnvironment } from "../utils.js"
-import { Framework } from "../types.js"
+import { addImportProviders, getConfiguration, setEnvironment } from "../utils.js"
 
 
 export const getProvider = async () => {
@@ -23,8 +22,9 @@ export const getProvider = async () => {
 /**
  * 
  */
-export const promptInitProviders = async (framework: Framework, baseConfigPath: string) => {
+export const promptInitProviders = async () => {
     const provider = await getProvider()
+    const { framework, baseConfigPath } = await getConfiguration()
     addImportProviders(framework, provider, baseConfigPath)
     await setEnvironment(`AUTH_${provider}_ID`, "HERE_MUST_CONTAINS_THE_KEY")
     await setEnvironment(`AUTH_${provider}_SECRET`, "HERE_MUST_CONTAINS_THE_KEY")

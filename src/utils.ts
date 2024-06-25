@@ -1,8 +1,10 @@
-import fs from 'fs';
+import fs from 'fs'
+import { readFile, writeFile } from "fs/promises"
 import path from "path"
 import { promisify } from "util"
 import { exec } from "child_process"
 import { createSpinner } from 'nanospinner'
+import { ConfigBase } from './types.js'
 
 /**
  * Create a promise to execute the command for installing
@@ -64,7 +66,7 @@ export const writeConfig = (route: string, content: string): void => {
  * the environment variables. This is mandatory for using auth.js without considering
  * the framework.
  */
-export const setEnvironment = async (envName: string, value: string): Promise<void> => {
+export const setEnvironment = async (envName: string, value: string): Promise<string> => {
     const environmentPath = configPath(".env")
     const existVariable = process.env[envName]
 
@@ -76,12 +78,14 @@ export const setEnvironment = async (envName: string, value: string): Promise<vo
                 encoding: "utf-8",                
             })
             spinner.success({ text: `${envName} variable was created` })
+            return value
         } catch (error) {
             spinner.error({ text: "An error occurred while generating the secret key" })
         }
-        return
+        return "ERROR"
     }
     createSpinner(`The ${envName} already exists`).warn()
+    return "ERROR"
 }
 
 
@@ -113,4 +117,41 @@ export const addImportProviders = (frameworkPath: string, providerName: Capitali
  */
 export const containsInFile = (fileContent: string, searchString: string): boolean => {
     return fileContent.split(/\r?\n/).some(line => line.trim() === searchString.trim())
+}
+
+
+/**
+ * Reads the base configuration from the project's `config.json` file.
+ *
+ * @returns {Promise<ConfigBase>} A promise that resolves to the parsed configuration object.
+ * @throws {Error} If there's an error reading or parsing the JSON file.
+ */
+export const getConfiguration = async (): Promise<ConfigBase> => {
+    try {
+        const readContent = await readFile("./src/config.json", "utf-8")
+        return JSON.parse(readContent)
+    } catch(error) {
+        return setConfiguration({ framework: "NextJs", baseConfigPath: "auth.ts" })
+    }
+}
+
+
+/**
+ * Updates the project's base configuration in the `config.json` file.
+ *
+ * @param {ConfigBase} configBase The new configuration object to write.
+ * @returns {Promise<void>} A promise that resolves when the update is complete.
+ * @throws {Error} If there's an error writing to the JSON file.
+ */
+export const setConfiguration = async (configBase: ConfigBase): Promise<ConfigBase> => {
+    try {
+        const configJson = JSON.stringify(configBase, null, 2)
+        await writeFile("./src/config.json", configJson, {
+            flag: "w",
+            encoding: "utf-8"
+        })    
+        return configBase
+    } catch(error) {
+        return configBase
+    }
 }

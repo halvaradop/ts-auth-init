@@ -1,43 +1,50 @@
 #! /usr/bin/env node
 
-import "dotenv/config.js"
+import "dotenv/config"
 import { FlagOptions } from "./types.js"
 import { Command } from "commander"
 import { setAuthConfigEnvironment } from "./commands/environment.js"
 import { promptInitProviders } from "./prompts/providers.js"
 import { promptInitConfig } from "./prompts/init.js"
-
+import { setConfiguration } from "./utils.js"
 
 /**
  * Declare and initialize the program
  */
 const program = new Command()
-export const { framework, baseConfigPath } = await promptInitConfig()
 
 /**
  * 
  */
 program
     .name("auth-init")
-    .description("Initializer a project with Auth.js")
-    .version("0.0.2")
+    .description("Initializes a new project with Auth.js configuration")
+    .version("0.0.3")
 
 /**
  * Configuration of CLI options and arguments
  */
 program
-    .option("-s, --secret", "Generate the secret key")
-    .option("-p, --providers", "Select the provider to be initialized")
+    .option("-s, --secret", "Generate a secret key for your project (recommended)")
+    .option("-p, --providers", "Select a provider to initialize")
+    .option("-i, --init", "Run the interactive project setup process", true)
     .action(async (flags: FlagOptions) => {
         if(flags.secret) {
-            await setAuthConfigEnvironment()
+            return await setAuthConfigEnvironment()
         }
         if(flags.providers) {
-            await promptInitProviders(framework, baseConfigPath)
+            return await promptInitProviders()
+        }
+        if(flags.init) {
+            const { framework, baseConfigPath } = await promptInitConfig()
+            setConfiguration({
+                framework,
+                baseConfigPath
+            })
         }
     })
 
 /**
 * Parse the command line arguments
 */
-program.parseAsync(process.argv)
+await program.parseAsync(process.argv)

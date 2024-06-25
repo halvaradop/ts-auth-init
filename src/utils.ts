@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { readFile, writeFile } from "fs/promises"
+import { readFile, writeFile, appendFile, mkdir } from "fs/promises"
 import path from "path"
 import { promisify } from "util"
 import { exec } from "child_process"
@@ -39,19 +39,20 @@ export const configPath = (route: string = ""): string => {
  * 
  * @param {string} route - The full path where the directories and file should be created.
  * @param {string} content - The content to be written to the file.
+ * @returns {Promise<void>}
  */
-export const writeConfig = (route: string, content: string): void => {
+export const writeConfig = async (route: string, content: string): Promise<void> => {
     let root = configPath()
     const relative = path.relative(ROOT, route).split("\\")
-    relative.forEach(routePath => {
+    relative.forEach(async (routePath) => {
         root = path.join(root, routePath)
         if (!fs.existsSync(root)) {
             if (!routePath.match(".(js|ts)")) {
                 if (!fs.existsSync(root)) {
-                    fs.mkdirSync(root, { recursive: true })
+                    await mkdir(root, { recursive: true })
                 }
             } else {
-                fs.writeFileSync(route, content, {
+                await writeFile(route, content, {
                     flag: "a",
                     encoding: "utf-8"
                 })
@@ -62,9 +63,13 @@ export const writeConfig = (route: string, content: string): void => {
 
 
 /**
- * Sets up the environment variables used throughout the project, initially creating
- * the environment variables. This is mandatory for using auth.js without considering
- * the framework.
+ * Sets up the environment variables used by the providers to ensure the correct
+ * connection. These environment variables are mandatory for the proper functioning
+ * of the authentication methods offered by Auth.js.
+ * 
+ * @param {string} envName - The name of the environment variable to set.
+ * @param {string} value - The value to assign to the environment variable.
+ * @returns {Promise<string>} - A promise that resolves to a string indicating the result of the operation.
  */
 export const setEnvironment = async (envName: string, value: string): Promise<string> => {
     const environmentPath = configPath(".env")
@@ -73,7 +78,7 @@ export const setEnvironment = async (envName: string, value: string): Promise<st
     if (!existVariable) {
         const spinner = createSpinner("Setting up the environment variables of the project").start()
         try {
-            fs.appendFileSync(environmentPath, `${envName}=${value}\r\n`, {
+            appendFile(environmentPath, `${envName}=${value}\r\n`, {
                 flag: "a",
                 encoding: "utf-8",                
             })
@@ -92,16 +97,16 @@ export const setEnvironment = async (envName: string, value: string): Promise<st
 /**
  * Adds the import for a provider to the configuration file if it doesn't already exist.
  *
- * @param frameworkPath Path prefix for the provider import (based on framework).
- * @param providerName The name of the provider to import (capitalized).
- * @param baseConfigPath The name of the configuration file.
+ * @param {string} frameworkPath Path prefix for the provider import (based on framework).
+ * @param {string} providerName The name of the provider to import (capitalized).
+ * @param {string} baseConfigPath The name of the configuration file.
  */
-export const addImportProviders = (frameworkPath: string, providerName: Capitalize<string>, baseConfigPath: string) => {
-    const readFile = fs.readFileSync(baseConfigPath, "utf-8")
+export const addImportProviders = async (frameworkPath: string, providerName: Capitalize<string>, baseConfigPath: string): Promise<void> => {
+    const readContent = await readFile(baseConfigPath, "utf-8")
     const baseImport = `import ${providerName} from "${frameworkPath}/providers/${providerName.toLowerCase()}"`
-    if(containsInFile(readFile, baseImport)) return
+    if(containsInFile(readContent, baseImport)) return
     
-    fs.writeFileSync(baseConfigPath, `${baseImport}\r\n${readFile}` , {
+    writeFile(baseConfigPath, `${baseImport}\r\n${readContent}` , {
         flag: "w",
         encoding: "utf-8"
     })

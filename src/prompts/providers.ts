@@ -2,7 +2,12 @@ import { rawlist } from "@inquirer/prompts"
 import { addImportProviders, getConfiguration, setEnvironment } from "../utils.js"
 
 
-export const getProvider = async () => {
+/**
+ * Prompts the user to select the provider to be configured in the project.
+ * 
+ * @returns {Promise<Capitalize<string>>} - A promise that resolves to the provider selected by the user.
+ */
+export const getProvider = async (): Promise<Capitalize<string>> => {
     return await rawlist<Capitalize<string>>({
         message: "Select the providers to be configurated",
         choices: [
@@ -20,7 +25,9 @@ export const getProvider = async () => {
 
 
 /**
+ * Main prompt used to build the configuration for the provider selected by the user.
  * 
+ * @returns {Promise<void>}
  */
 export const promptInitProviders = async () => {
     const provider = await getProvider()

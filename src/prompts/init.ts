@@ -1,6 +1,7 @@
 import { confirm, input, select } from "@inquirer/prompts"
-import { Framework } from "../types.js"
+import { ConfigBase, Framework } from "../types.js"
 import { initializeAuth } from "../commands/auth.js"
+import { setEnvironment } from "../utils.js"
 
 
 const selectFramework = async () => {
@@ -29,9 +30,13 @@ const fileName = async () => {
     })
 }
 
-export const promptInitConfig = async () => {
+export const promptInitConfig = async (): Promise<ConfigBase> => {
     const framework = await selectFramework()
     const configuration = await confirmConfigurationCreation()
-    const fileNameConfig = await fileName()
-    return initializeAuth(framework, configuration, fileNameConfig)
+    const baseConfigPath = await fileName()
+    initializeAuth(framework, configuration, baseConfigPath)
+    return {
+        framework,
+        baseConfigPath
+    }
 }

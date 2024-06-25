@@ -7,7 +7,15 @@ logs/
 .npmrc
 features.md
 auth.ts
+/src/config.json
 
 # NextConfiguration
 middleware.ts
 app/
+
+# SvelteConfiguration
+src/auth.ts
+src/hooks.server.ts
+
+# ExpressConfiguration
+src/routes/auth.route.ts

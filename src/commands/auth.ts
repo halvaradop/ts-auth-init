@@ -18,13 +18,12 @@ import { frameworkInstall, getCodeByFramework } from "./frameworks.js"
  * @param {string} baseConfigPath - The name of the configuration file to be created.
  * @returns {Promise<void>} A promise that resolves when the initialization is complete.
  */
-export const initializeAuth = async (framework: Framework, create: boolean, baseConfigPath: string): Promise<ConfigBase> => {
+export const initializeAuth = async (framework: Framework, create: boolean, baseConfigPath: string): Promise<void> => {
     installFrameworkAuth(framework)
     const configFramework = getCodeByFramework(framework, baseConfigPath)
     if (create) {
         configFramework.map(({ path, content }) => writeConfig(path, content))
     }
-    return { framework, baseConfigPath }
 }
 
 

@@ -1,6 +1,6 @@
 import { createSpinner } from "nanospinner"
 import { execAsync, writeConfig } from "../utils.js"
-import { ConfigBase, Framework } from "../types.js"
+import { Framework } from "../types.js"
 import { frameworkInstall, getCodeByFramework } from "./frameworks.js"
 
 

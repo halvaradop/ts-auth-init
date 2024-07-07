@@ -11,3 +11,7 @@ To install the initializer of authentication with Auth.js, you should install it
 ```bash
 npm i -g @halvaradop/auth-init
 ```
+
+## Contributing
+
+Here, you will find a guide on how to contribute to the project and the necessary steps to do so. Please read our [Contributing Guidelines](.github/CONTRIBUTING.md).

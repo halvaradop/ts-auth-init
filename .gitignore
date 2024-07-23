@@ -8,6 +8,7 @@ logs/
 features.md
 auth.ts
 /src/config.json
+package-lock.json
 
 # NextConfiguration
 middleware.ts

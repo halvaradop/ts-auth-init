@@ -12,6 +12,21 @@ To install the initializer of authentication with Auth.js, you should install it
 npm i -g @halvaradop/auth-init
 ```
 
+## Usage
+To use the initializer, you can run the following code. This command will display a series of questions to help you build your application with NextAuth using the CLI.
+There are three flags that can be used with this command:
+```bash
+# Build the configuration
+auth-init --init (default)
+
+# Import and set up the providers
+auth-init --providers
+
+# Generate the secret key for the project
+auth-init --secret
+```
+
+
 ## Contributing
 
 Here, you will find a guide on how to contribute to the project and the necessary steps to do so. Please read our [Contributing Guidelines](https://github.com/halvaradop/.github/blob/master/.github/CODE_OF_CONDUCT.md).

@@ -37,6 +37,7 @@
     "@types/inquirer": "^9.0.7",
     "@types/node": "^20.14.3",
     "dotenv": "^16.4.5",
+    "prettier": "^3.3.3",
     "typescript": "^5.4.5"
   },
   "dependencies": {
@@ -47,5 +48,25 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "prettier": {
+    "tabWidth": 4,
+    "semi": false,
+    "useTabs": true,
+    "singleQuote": false,
+    "printWidth": 130,
+    "overrides": [
+      {
+        "files": [
+          "*.json",
+          "README",
+          "*.yaml"
+        ],
+        "options": {
+          "tabWidth": 2,
+          "useTabs": false
+        }
+      }
+    ]
+  }
 }

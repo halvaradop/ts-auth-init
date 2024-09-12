@@ -11,7 +11,9 @@
     "build": "tsc",
     "link": "npm unlink @halvaradop/auth-init && chmod +x dist/index.js && npm link @halvaradop/auth-init",
     "uninstall": "npm uninstall @auth/express @auth/sveltekit next-auth",
-    "start": "(rm -rf auth.js | true) && (rm -rf .env* | true) && npm run uninstall && node dist/index.js"
+    "start": "(rm -rf auth.js | true) && (rm -rf .env* | true) && npm run uninstall && node dist/index.js",
+    "format": "npx prettier --write .",
+    "format:check": "npx prettier --check ."
   },
   "type": "module",
   "keywords": [

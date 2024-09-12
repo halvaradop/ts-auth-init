@@ -40,9 +40,6 @@ program
 			})
 		}
 	})
-	.exitOverride((error) => {
-		console.log(`Exit: ${error}`)
-	})
 	.showHelpAfterError(errorColor("You can execute (auth-init --help) to see the available options"))
 	.configureOutput({
 		writeErr: (error) => {

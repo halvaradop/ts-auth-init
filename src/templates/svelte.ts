@@ -1,4 +1,3 @@
-
 export const codeSvelteKitBase = `
 import { SvelteKitAuth } from "@auth/sveltekit"
  

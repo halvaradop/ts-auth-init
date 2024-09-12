@@ -6,7 +6,7 @@ import { Command } from "commander"
 import { setAuthConfigEnvironment } from "./commands/environment.js"
 import { promptInitProviders } from "./prompts/providers.js"
 import { promptInitConfig } from "./prompts/init.js"
-import { setConfiguration } from "./utils.js"
+import { errorColor, setConfiguration } from "./utils.js"
 
 /**
  * Declare and initialize the program
@@ -40,8 +40,23 @@ program
 			})
 		}
 	})
+	.exitOverride((error) => {
+		console.log(`Exit: ${error}`)
+	})
+	.showHelpAfterError(errorColor("You can execute (auth-init --help) to see the available options"))
+	.configureOutput({
+		writeErr: (error) => {
+			process.stdout.write(errorColor(`[ERROR]: ${error}`))
+		},
+		outputError: (error, write) => {
+			write(errorColor(error))
+		},
+	})
 
 /**
  * Parse the command line arguments
  */
-await program.parseAsync(process.argv)
+await program.parseAsync(process.argv).catch(() => {
+	console.error("The program was closed due to an error..")
+	process.exit(1)
+})

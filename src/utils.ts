@@ -157,3 +157,14 @@ export const setConfiguration = async (configBase: ConfigBase): Promise<ConfigBa
 		return configBase
 	}
 }
+
+/**
+ * Paints a message with a red color in the output terminal
+ * using ANSI escape codes.
+ *
+ * @param str The message to be printed in red
+ * @returns The colored message as a string
+ */
+export const errorColor = (str: string): string => {
+	return `\x1b[31m${str}\x1b[0m`
+}

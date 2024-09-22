@@ -9,11 +9,9 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
-    "link": "npm unlink @halvaradop/auth-init && chmod +x dist/index.js && npm link @halvaradop/auth-init",
-    "uninstall": "npm uninstall @auth/express @auth/sveltekit next-auth",
-    "start": "(rm -rf auth.js | true) && (rm -rf .env* | true) && npm run uninstall && node dist/index.js",
-    "format": "npx prettier --write .",
-    "format:check": "npx prettier --check .",
+    "link": "npm unlink . && chmod +x dist/index.js && npm link .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest --run --silent",
     "test:watch": "vitest"
   },
@@ -48,8 +46,7 @@
   "dependencies": {
     "@inquirer/prompts": "^5.0.5",
     "commander": "^12.1.0",
-    "nanospinner": "^1.1.0",
-    "next-auth": "^5.0.0-beta.19"
+    "nanospinner": "^1.1.0"
   },
   "files": [
     "dist"

@@ -13,7 +13,9 @@
     "uninstall": "npm uninstall @auth/express @auth/sveltekit next-auth",
     "start": "(rm -rf auth.js | true) && (rm -rf .env* | true) && npm run uninstall && node dist/index.js",
     "format": "npx prettier --write .",
-    "format:check": "npx prettier --check ."
+    "format:check": "npx prettier --check .",
+    "test": "vitest --run --silent",
+    "test:watch": "vitest"
   },
   "type": "module",
   "keywords": [
@@ -40,7 +42,8 @@
     "@types/node": "^20.14.3",
     "dotenv": "^16.4.5",
     "prettier": "^3.3.3",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^2.1.1"
   },
   "dependencies": {
     "@inquirer/prompts": "^5.0.5",

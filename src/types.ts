@@ -10,10 +10,3 @@ export interface PathFile {
 	path: string
 	content: string
 }
-
-export type ArgsFunction = (...args: any) => void
-
-export interface ConfigBase {
-	framework: Framework
-	baseConfigPath: string
-}

@@ -3,10 +3,10 @@
 import "dotenv/config"
 import { FlagOptions } from "./types.js"
 import { Command } from "commander"
-import { setAuthConfigEnvironment } from "./commands/environment.js"
-import { promptInitProviders } from "./prompts/providers.js"
+import { setAuthConfigEnvironment } from "./commands/secret.js"
+import { promptInitProviders } from "./prompts/import-provider.js"
 import { promptInitConfig } from "./prompts/init.js"
-import { errorColor, setConfiguration } from "./utils.js"
+import { errorColor } from "./utils.js"
 
 /**
  * Declare and initialize the program
@@ -33,11 +33,7 @@ program
 			return await promptInitProviders()
 		}
 		if (flags.init) {
-			const { framework, baseConfigPath } = await promptInitConfig()
-			setConfiguration({
-				framework,
-				baseConfigPath,
-			})
+			return await promptInitConfig()
 		}
 	})
 	.showHelpAfterError(errorColor("You can execute (auth-init --help) to see the available options"))
@@ -54,6 +50,6 @@ program
  * Parse the command line arguments
  */
 await program.parseAsync(process.argv).catch(() => {
-	console.error("The program was closed due to an error..")
+	console.error(errorColor(`[ERROR]: the program was closed`))
 	process.exit(1)
 })

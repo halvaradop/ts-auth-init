@@ -20,8 +20,8 @@ import { frameworkInstall, getCodeByFramework } from "./frameworks.js"
  */
 export const initializeAuth = async (framework: Framework, create: boolean, baseConfigPath: string): Promise<void> => {
     installFrameworkAuth(framework)
-    const configFramework = getCodeByFramework(framework, baseConfigPath)
     if (create) {
+        const configFramework = getCodeByFramework(framework, baseConfigPath)
         configFramework.map(({ path, content }) => writeConfig(path, content))
     }
 }

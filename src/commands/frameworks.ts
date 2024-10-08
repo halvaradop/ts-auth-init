@@ -17,15 +17,35 @@ import { Framework, PathFile } from "../types.js"
 export const getCodeByFramework = (framework: Framework, baseConfigPath: string) => {
 	const frameworkCode: Record<Framework, PathFile[]> = {
 		NextJs: [
-			{ path: baseConfigPath, content: getCodeNextBase },
-			{ path: "app/api/auth/[...nextauth]/route.ts", content: getCodeNextHandler(baseConfigPath) },
-			{ path: "middleware.ts", content: getCodeNextMiddleware(baseConfigPath) },
+			{
+				path: baseConfigPath,
+				content: getCodeNextBase,
+			},
+			{
+				path: "app/api/auth/[...nextauth]/route.ts",
+				content: getCodeNextHandler(baseConfigPath),
+			},
+			{
+				path: "middleware.ts",
+				content: getCodeNextMiddleware(baseConfigPath),
+			},
 		],
 		SvelteKit: [
-			{ path: baseConfigPath, content: codeSvelteKitBase },
-			{ path: "src/hooks.server.ts", content: codeSvelteKitHandler },
+			{
+				path: baseConfigPath,
+				content: codeSvelteKitBase,
+			},
+			{
+				path: "src/hooks.server.ts",
+				content: codeSvelteKitHandler,
+			},
 		],
-		Express: [{ path: baseConfigPath, content: codeExpressBase }],
+		Express: [
+			{
+				path: baseConfigPath,
+				content: codeExpressBase,
+			},
+		],
 	}
 	return frameworkCode[framework]
 }

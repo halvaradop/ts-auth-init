@@ -8,14 +8,14 @@ import { initializeAuth } from "../commands/auth.js"
  * @returns {Promise<Framework>} - A promise that resolves to the choice selected by the user.
  */
 const frameworkSelection = async (): Promise<Framework> => {
-	return select<Framework>({
-		message: "Select the framework that you will use in your project",
-		choices: [
-			{ name: "Next.js", value: "NextJs" },
-			{ name: "SvelteKit", value: "SvelteKit" },
-			{ name: "Express", value: "Express" },
-		],
-	})
+    return select<Framework>({
+        message: "Select the framework that you will use in your project",
+        choices: [
+            { name: "Next.js", value: "NextJs" },
+            { name: "SvelteKit", value: "SvelteKit" },
+            { name: "Express", value: "Express" },
+        ],
+    })
 }
 
 /**
@@ -25,7 +25,7 @@ const frameworkSelection = async (): Promise<Framework> => {
  * @returns {Promise<boolean>} - A promise that resolves to the user's confirmation.
  */
 const confirmConfigurationFile = async (): Promise<boolean> => {
-	return confirm({ message: "Do you want to create the configuration file?" })
+    return confirm({ message: "Do you want to create the configuration file?" })
 }
 
 /**
@@ -34,10 +34,10 @@ const confirmConfigurationFile = async (): Promise<boolean> => {
  * @returns {Promise<string>} - A promise that resolves to the name of the configuration file.
  */
 const configFileName = async (): Promise<string> => {
-	return input({
-		message: "Enter the name of the configuration file:",
-		default: "auth.ts",
-	})
+    return input({
+        message: "Enter the name of the configuration file:",
+        default: "auth.ts",
+    })
 }
 
 /**
@@ -46,8 +46,8 @@ const configFileName = async (): Promise<string> => {
  *
  */
 export const promptInitConfig = async () => {
-	const framework = await frameworkSelection()
-	const configuration = await confirmConfigurationFile()
-	const baseConfigPath = await configFileName()
-	initializeAuth(framework, configuration, baseConfigPath)
+    const framework = await frameworkSelection()
+    const configuration = await confirmConfigurationFile()
+    const baseConfigPath = await configFileName()
+    initializeAuth(framework, configuration, baseConfigPath)
 }

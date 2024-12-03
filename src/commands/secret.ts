@@ -7,10 +7,10 @@ import { execAsync, setEnvironment } from "../utils.js"
  * the framework.
  */
 export const setAuthConfigEnvironment = async (size: number = 32): Promise<void> => {
-	try {
-		const { stdout: randomized } = await execAsync(`openssl rand -base64 ${size}`)
-		setEnvironment("AUTH_SECRET", randomized)
-	} catch (error) {
-		createSpinner("Error").error({ text: "An error occurred while generating the secret key" })
-	}
+    try {
+        const { stdout: randomized } = await execAsync(`openssl rand -base64 ${size}`)
+        await setEnvironment("AUTH_SECRET", randomized)
+    } catch (error) {
+        createSpinner("Error").error({ text: "An error occurred while generating the secret key" })
+    }
 }

@@ -15,46 +15,46 @@ import { Framework, PathFile } from "../types.js"
  * @returns The array of path and content objects for the specified framework.
  */
 export const getCodeByFramework = (framework: Framework, baseConfigPath: string) => {
-	const frameworkCode: Record<Framework, PathFile[]> = {
-		NextJs: [
-			{
-				path: baseConfigPath,
-				content: getCodeNextBase,
-			},
-			{
-				path: "app/api/auth/[...nextauth]/route.ts",
-				content: getCodeNextHandler(baseConfigPath),
-			},
-			{
-				path: "middleware.ts",
-				content: getCodeNextMiddleware(baseConfigPath),
-			},
-		],
-		SvelteKit: [
-			{
-				path: baseConfigPath,
-				content: codeSvelteKitBase,
-			},
-			{
-				path: "src/hooks.server.ts",
-				content: codeSvelteKitHandler,
-			},
-		],
-		Express: [
-			{
-				path: baseConfigPath,
-				content: codeExpressBase,
-			},
-		],
-	}
-	return frameworkCode[framework]
+    const frameworkCode: Record<Framework, PathFile[]> = {
+        NextJs: [
+            {
+                path: baseConfigPath,
+                content: getCodeNextBase,
+            },
+            {
+                path: "app/api/auth/[...nextauth]/route.ts",
+                content: getCodeNextHandler(baseConfigPath),
+            },
+            {
+                path: "middleware.ts",
+                content: getCodeNextMiddleware(baseConfigPath),
+            },
+        ],
+        SvelteKit: [
+            {
+                path: baseConfigPath,
+                content: codeSvelteKitBase,
+            },
+            {
+                path: "src/hooks.server.ts",
+                content: codeSvelteKitHandler,
+            },
+        ],
+        Express: [
+            {
+                path: baseConfigPath,
+                content: codeExpressBase,
+            },
+        ],
+    }
+    return frameworkCode[framework]
 }
 
 /**
  * The command to be executed to install the dependencides of a framework
  */
 export const frameworkInstall: Record<Framework, string> = {
-	NextJs: "npm i next-auth@beta",
-	SvelteKit: "npm i @auth/sveltekit",
-	Express: "npm i @auth/express",
+    NextJs: "npm i next-auth@beta",
+    SvelteKit: "npm i @auth/sveltekit",
+    Express: "npm i @auth/express",
 }

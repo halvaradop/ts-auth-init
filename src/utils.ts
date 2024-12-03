@@ -24,7 +24,7 @@ export const ROOT = path.resolve(process.cwd())
  * @returns {string} The full path constructed by joining the ROOT directory and the route.
  */
 export const configPath = (route: string = ""): string => {
-	return path.join(ROOT, route)
+    return path.join(ROOT, route)
 }
 
 /**
@@ -39,23 +39,23 @@ export const configPath = (route: string = ""): string => {
  * @returns {Promise<void>}
  */
 export const writeConfig = async (route: string, content: string): Promise<void> => {
-	let root = configPath()
-	const relative = path.relative(ROOT, route).split("\\")
-	relative.forEach(async (routePath) => {
-		root = path.join(root, routePath)
-		if (!fs.existsSync(root)) {
-			if (!routePath.match(".(js|ts)")) {
-				if (!fs.existsSync(root)) {
-					await mkdir(root, { recursive: true })
-				}
-			} else {
-				await writeFile(route, content, {
-					flag: "a",
-					encoding: "utf-8",
-				})
-			}
-		}
-	})
+    let root = configPath()
+    const relative = path.relative(ROOT, route).split("\\")
+    relative.forEach(async (routePath) => {
+        root = path.join(root, routePath)
+        if (!fs.existsSync(root)) {
+            if (!routePath.match(".(js|ts)")) {
+                if (!fs.existsSync(root)) {
+                    await mkdir(root, { recursive: true })
+                }
+            } else {
+                await writeFile(route, content, {
+                    flag: "a",
+                    encoding: "utf-8",
+                })
+            }
+        }
+    })
 }
 
 /**
@@ -68,25 +68,25 @@ export const writeConfig = async (route: string, content: string): Promise<void>
  * @returns {Promise<string>} - A promise that resolves to a string indicating the result of the operation.
  */
 export const setEnvironment = async (envName: string, value: string): Promise<string> => {
-	const environmentPath = configPath(".env")
-	const existVariable = process.env[envName]
+    const environmentPath = configPath(".env")
+    const existVariable = process.env[envName]
 
-	if (!existVariable) {
-		const spinner = createSpinner("Setting up the environment variables of the project").start()
-		try {
-			appendFile(environmentPath, `${envName}=${value}\r\n`, {
-				flag: "a",
-				encoding: "utf-8",
-			})
-			spinner.success({ text: `${envName} variable was created` })
-			return value
-		} catch (error) {
-			spinner.error({ text: "An error occurred while generating the secret key" })
-		}
-		return "ERROR"
-	}
-	createSpinner(`The ${envName} already exists`).warn()
-	return "ERROR"
+    if (!existVariable) {
+        const spinner = createSpinner("Setting up the environment variables of the project").start()
+        try {
+            appendFile(environmentPath, `${envName}=${value}\r\n`, {
+                flag: "a",
+                encoding: "utf-8",
+            })
+            spinner.success({ text: `${envName} variable was created` })
+            return value
+        } catch (error) {
+            spinner.error({ text: "An error occurred while generating the secret key" })
+        }
+        return "ERROR"
+    }
+    createSpinner(`The ${envName} already exists`).warn()
+    return "ERROR"
 }
 
 /**
@@ -97,18 +97,18 @@ export const setEnvironment = async (envName: string, value: string): Promise<st
  * @param {string} baseConfigPath The name of the configuration file.
  */
 export const addImportProviders = async (
-	frameworkPath: string,
-	providerName: Capitalize<string>,
-	baseConfigPath: string,
+    frameworkPath: string,
+    providerName: Capitalize<string>,
+    baseConfigPath: string,
 ): Promise<void> => {
-	const readContent = await readFile(baseConfigPath, "utf-8")
-	const baseImport = `import ${providerName} from "${frameworkPath}/providers/${providerName.toLowerCase()}"`
-	if (containsInFile(readContent, baseImport)) return
+    const readContent = await readFile(baseConfigPath, "utf-8")
+    const baseImport = `import ${providerName} from "${frameworkPath}/providers/${providerName.toLowerCase()}"`
+    if (containsInFile(readContent, baseImport)) return
 
-	writeFile(baseConfigPath, `${baseImport}\r\n${readContent}`, {
-		flag: "w",
-		encoding: "utf-8",
-	})
+    writeFile(baseConfigPath, `${baseImport}\r\n${readContent}`, {
+        flag: "w",
+        encoding: "utf-8",
+    })
 }
 
 /**
@@ -119,7 +119,7 @@ export const addImportProviders = async (
  * @returns {boolean} True if the search string exists in a line of the file, false otherwise.
  */
 export const containsInFile = (fileContent: string, searchString: string): boolean => {
-	return fileContent.split(/\r?\n/).some((line) => line.trim() === searchString.trim())
+    return fileContent.split(/\r?\n/).some((line) => line.trim() === searchString.trim())
 }
 
 /**
@@ -130,5 +130,5 @@ export const containsInFile = (fileContent: string, searchString: string): boole
  * @returns The colored message as a string
  */
 export const errorColor = (str: string): string => {
-	return `\x1b[31m${str}\x1b[0m`
+    return `\x1b[31m${str}\x1b[0m`
 }

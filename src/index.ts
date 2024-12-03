@@ -22,34 +22,34 @@ program.name("auth-init").description("Initializes a new project with Auth.js co
  * Configuration of CLI options and arguments
  */
 program
-	.option("-s, --secret", "Generate a secret key for your project (recommended)")
-	.option("-p, --providers", "Select a provider to initialize")
-	.option("-i, --init", "Run the interactive project setup process", true)
-	.action(async (flags: FlagOptions) => {
-		if (flags.secret) {
-			return await setAuthConfigEnvironment()
-		}
-		if (flags.providers) {
-			return await promptInitProviders()
-		}
-		if (flags.init) {
-			return await promptInitConfig()
-		}
-	})
-	.showHelpAfterError(errorColor("You can execute (auth-init --help) to see the available options"))
-	.configureOutput({
-		writeErr: (error) => {
-			process.stdout.write(errorColor(`[ERROR]: ${error}`))
-		},
-		outputError: (error, write) => {
-			write(errorColor(error))
-		},
-	})
+    .option("-s, --secret", "Generate a secret key for your project (recommended)")
+    .option("-p, --providers", "Select a provider to initialize")
+    .option("-i, --init", "Run the interactive project setup process", true)
+    .action(async (flags: FlagOptions) => {
+        if (flags.secret) {
+            return await setAuthConfigEnvironment()
+        }
+        if (flags.providers) {
+            return await promptInitProviders()
+        }
+        if (flags.init) {
+            return await promptInitConfig()
+        }
+    })
+    .showHelpAfterError(errorColor("You can execute (auth-init --help) to see the available options"))
+    .configureOutput({
+        writeErr: (error) => {
+            process.stdout.write(errorColor(`[ERROR]: ${error}`))
+        },
+        outputError: (error, write) => {
+            write(errorColor(error))
+        },
+    })
 
 /**
  * Parse the command line arguments
  */
 await program.parseAsync(process.argv).catch(() => {
-	console.error(errorColor(`[ERROR]: the program was closed`))
-	process.exit(1)
+    console.error(errorColor(`[ERROR]: the program was closed`))
+    process.exit(1)
 })

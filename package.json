@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
-    "link": "npm unlink . && chmod +x dist/index.js && npm link .",
+    "link-cli": "pnpm unlink @halvaradop/auth-init && chmod +x dist/index.js && pnpm link -g",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest --run --silent",

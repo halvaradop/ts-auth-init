@@ -1,12 +1,15 @@
-export type Framework = "NextJs" | "SvelteKit" | "Express"
-
-export interface FlagOptions {
-    secret: boolean
-    providers: boolean
-    init: boolean
+export interface OptionsCLI {
+    size: number
+    provider: string
+    list: boolean
+    framework: string | undefined
 }
 
-export interface PathFile {
-    path: string
-    content: string
+interface InternalSpinnerOptions {
+    initial: string
+    error?: string
+    success?: string
+    warning?: string
 }
+
+export type CreateInternalSpinner = (callback: (...args: any) => Promise<void>, options: InternalSpinnerOptions) => void

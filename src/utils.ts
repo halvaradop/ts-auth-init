@@ -1,9 +1,14 @@
-import fs from "fs"
-import { readFile, writeFile, appendFile, mkdir } from "fs/promises"
 import path from "path"
+import { readFile, writeFile } from "fs/promises"
 import { promisify } from "util"
 import { exec } from "child_process"
 import { createSpinner } from "nanospinner"
+import { OutputConfiguration } from "commander"
+import { fileURLToPath } from "url"
+import { supportedFrameworks } from "./commands/init.js"
+import { existsSync } from "fs"
+import { CreateInternalSpinner } from "./types.js"
+import { DuplicateEnvironmentError } from "./errors.js"
 
 /**
  * Create a promise to execute the command for installing
@@ -11,7 +16,10 @@ import { createSpinner } from "nanospinner"
  * without breaking the workflow.
  */
 export const execAsync = promisify(exec)
-export const ROOT = path.resolve(process.cwd())
+
+export const { name, description, version } = JSON.parse(
+    await readFile(path.join(fileURLToPath(new URL(".", import.meta.url)), "../package.json"), "utf-8"),
+)
 
 /**
  * Constructs a path by joining the ROOT directory with the specified route.
@@ -24,38 +32,7 @@ export const ROOT = path.resolve(process.cwd())
  * @returns {string} The full path constructed by joining the ROOT directory and the route.
  */
 export const configPath = (route: string = ""): string => {
-    return path.join(ROOT, route)
-}
-
-/**
- * Creates the specified path and writes the content to the file.
- *
- * This function takes a path (`route`) and content (`content`), creates all necessary directories
- * in the specified path, and if the last element in the path is a file (with .js or .ts extension),
- * writes the content to the file.
- *
- * @param {string} route - The full path where the directories and file should be created.
- * @param {string} content - The content to be written to the file.
- * @returns {Promise<void>}
- */
-export const writeConfig = async (route: string, content: string): Promise<void> => {
-    let root = configPath()
-    const relative = path.relative(ROOT, route).split("\\")
-    relative.forEach(async (routePath) => {
-        root = path.join(root, routePath)
-        if (!fs.existsSync(root)) {
-            if (!routePath.match(".(js|ts)")) {
-                if (!fs.existsSync(root)) {
-                    await mkdir(root, { recursive: true })
-                }
-            } else {
-                await writeFile(route, content, {
-                    flag: "a",
-                    encoding: "utf-8",
-                })
-            }
-        }
-    })
+    return path.join(path.resolve(process.cwd()), route)
 }
 
 /**
@@ -65,61 +42,30 @@ export const writeConfig = async (route: string, content: string): Promise<void>
  *
  * @param {string} envName - The name of the environment variable to set.
  * @param {string} value - The value to assign to the environment variable.
- * @returns {Promise<string>} - A promise that resolves to a string indicating the result of the operation.
  */
-export const setEnvironment = async (envName: string, value: string): Promise<string> => {
-    const environmentPath = configPath(".env")
-    const existVariable = process.env[envName]
-
-    if (!existVariable) {
-        const spinner = createSpinner("Setting up the environment variables of the project").start()
-        try {
-            appendFile(environmentPath, `${envName}=${value}\r\n`, {
-                flag: "a",
-                encoding: "utf-8",
-            })
-            spinner.success({ text: `${envName} variable was created` })
-            return value
-        } catch (error) {
-            spinner.error({ text: "An error occurred while generating the secret key" })
-        }
-        return "ERROR"
-    }
-    createSpinner(`The ${envName} already exists`).warn()
-    return "ERROR"
-}
-
-/**
- * Adds the import for a provider to the configuration file if it doesn't already exist.
- *
- * @param {string} frameworkPath Path prefix for the provider import (based on framework).
- * @param {string} providerName The name of the provider to import (capitalized).
- * @param {string} baseConfigPath The name of the configuration file.
- */
-export const addImportProviders = async (
-    frameworkPath: string,
-    providerName: Capitalize<string>,
-    baseConfigPath: string,
-): Promise<void> => {
-    const readContent = await readFile(baseConfigPath, "utf-8")
-    const baseImport = `import ${providerName} from "${frameworkPath}/providers/${providerName.toLowerCase()}"`
-    if (containsInFile(readContent, baseImport)) return
-
-    writeFile(baseConfigPath, `${baseImport}\r\n${readContent}`, {
-        flag: "w",
-        encoding: "utf-8",
-    })
-}
-
-/**
- * Checks if a string exists within a file line by line.
- *
- * @param {string} fileContent The content of the file to search.
- * @param {string} searchString The string to search for.
- * @returns {boolean} True if the search string exists in a line of the file, false otherwise.
- */
-export const containsInFile = (fileContent: string, searchString: string): boolean => {
-    return fileContent.split(/\r?\n/).some((line) => line.trim() === searchString.trim())
+export const setEnvironment = (envName: string, value: string) => {
+    createInternalSpinner(
+        async () => {
+            const environmentPath = configPath(".env")
+            const existVariable = process.env[envName]
+            if (!existVariable) {
+                const envContent = await readFile(environmentPath, "utf-8")
+                const newLine = envContent.endsWith("\n") ? "" : "\n"
+                await writeFile(environmentPath, `${newLine}${envName}=${value}`, {
+                    flag: "a",
+                    encoding: "utf-8",
+                })
+            } else {
+                throw new DuplicateEnvironmentError()
+            }
+        },
+        {
+            initial: `Setting up the environment variable: ${envName}`,
+            success: `The environment variable ${envName} was successfully created.`,
+            error: `An error occurred while setting the environment variable ${envName}.`,
+            warning: `The environment variable ${envName} already exists.`,
+        },
+    )
 }
 
 /**
@@ -131,4 +77,44 @@ export const containsInFile = (fileContent: string, searchString: string): boole
  */
 export const errorColor = (str: string): string => {
     return `\x1b[31m${str}\x1b[0m`
+}
+
+/**
+ * Guesses the framework used in the project by analyzing the dependencies in the `package.json` file.
+ *
+ * @returns {Promise<string | undefined>} - The name of the framework guessed
+ */
+export const guessFramework = async (): Promise<string | undefined> => {
+    if (!existsSync(configPath("package.json"))) return undefined
+    const packageJson = JSON.parse(await readFile(configPath("package.json"), "utf-8"))
+    if (!packageJson || (packageJson && !packageJson?.dependencies)) return undefined
+    return Object.keys(packageJson.dependencies).find((dependency) =>
+        supportedFrameworks.has(dependency) ? dependency : undefined,
+    )
+}
+
+/**
+ * The configuration for the output of the program.
+ */
+export const configureOutput: OutputConfiguration = {
+    writeErr: (error) => {
+        process.stdout.write(error)
+    },
+    outputError: (error, write) => {
+        write(errorColor(error))
+    },
+}
+
+export const createInternalSpinner: CreateInternalSpinner = async (callback, { initial, success, error, warning }) => {
+    const spinner = createSpinner(initial).start()
+    try {
+        await callback()
+        spinner.success({ text: success })
+    } catch (e) {
+        if (e instanceof DuplicateEnvironmentError) {
+            spinner.warn({ text: warning })
+            return
+        }
+        spinner.error({ text: error })
+    }
 }

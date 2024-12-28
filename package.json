@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
-    "link": "npm unlink . && chmod +x dist/index.js && npm link .",
+    "link-cli": "pnpm unlink @halvaradop/auth-init && chmod +x dist/index.js && pnpm link -g",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest --run --silent",
@@ -37,16 +37,16 @@
   "homepage": "https://github.com/halvaradop/auth-init#readme",
   "devDependencies": {
     "@types/inquirer": "^9.0.7",
-    "@types/node": "^20.17.9",
-    "dotenv": "^16.4.5",
-    "prettier": "^3.4.1",
+    "@types/node": "^20.17.10",
+    "dotenv": "^16.4.7",
+    "prettier": "^3.4.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },
   "dependencies": {
     "@inquirer/prompts": "^5.5.0",
     "commander": "^12.1.0",
-    "nanospinner": "^1.2.0"
+    "nanospinner": "^1.2.2"
   },
   "files": [
     "dist"

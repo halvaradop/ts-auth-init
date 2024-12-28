@@ -14,20 +14,20 @@ importers:
         specifier: ^12.1.0
         version: 12.1.0
       nanospinner:
-        specifier: ^1.2.0
+        specifier: ^1.2.2
         version: 1.2.2
     devDependencies:
       "@types/inquirer":
         specifier: ^9.0.7
         version: 9.0.7
       "@types/node":
-        specifier: ^20.17.9
+        specifier: ^20.17.10
         version: 20.17.10
       dotenv:
-        specifier: ^16.4.5
+        specifier: ^16.4.7
         version: 16.4.7
       prettier:
-        specifier: ^3.4.1
+        specifier: ^3.4.2
         version: 3.4.2
       typescript:
         specifier: ^5.7.2

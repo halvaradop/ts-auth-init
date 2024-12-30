@@ -3,7 +3,8 @@
 import "dotenv/config"
 import { Command } from "commander"
 import { init, secret, provider } from "./commands/index.js"
-import { name, description, version, configureOutput, errorColor } from "./utils.js"
+import { name, description, version, configureOutput } from "./utils.js"
+import * as y from "yoctocolors"
 
 /**
  * Declare and initialize the program
@@ -35,13 +36,13 @@ program
     .action(provider)
 
 program
-    .showHelpAfterError(errorColor("You can execute (auth-init --help) to see the available options"))
+    .showHelpAfterError(y.red("You can execute (auth-init --help) to see the available options"))
     .configureOutput(configureOutput)
 
 /**
  * Parse the command line arguments
  */
 program.parseAsync(process.argv).catch(() => {
-    console.error(errorColor(`[ERROR]: the program was closed`))
+    console.error(y.red(`[ERROR]: the program was closed`))
     process.exit(1)
 })

@@ -16,6 +16,9 @@ importers:
       nanospinner:
         specifier: ^1.2.2
         version: 1.2.2
+      yoctocolors:
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       "@types/inquirer":
         specifier: ^9.0.7
@@ -675,6 +678,10 @@ packages:
     resolution: { integrity: sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA== }
     engines: { node: ">=18" }
 
+  yoctocolors@2.1.1:
+    resolution: { integrity: sha512-GQHQqAopRhwU8Kt1DDM8NjibDXHC8eoh1erhGAJPEyveY9qqVeXvVikNKrDz69sHowPMorbPUrH/mx8c50eiBQ== }
+    engines: { node: ">=18" }
+
 snapshots:
   "@esbuild/aix-ppc64@0.21.5":
     optional: true
@@ -1245,3 +1252,5 @@ snapshots:
       strip-ansi: 6.0.1
 
   yoctocolors-cjs@2.1.2: {}
+
+  yoctocolors@2.1.1: {}

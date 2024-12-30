@@ -5,11 +5,22 @@ export interface OptionsCLI {
     framework: string | undefined
 }
 
-interface InternalSpinnerOptions {
+export interface InternalSpinnerOptions {
     initial: string
     error?: string
     success?: string
     warning?: string
 }
 
-export type CreateInternalSpinner = (callback: (...args: any) => Promise<void>, options: InternalSpinnerOptions) => void
+export type CreateInternalSpinner = (
+    callback: (...args: any) => Promise<void>,
+    options: InternalSpinnerOptions,
+) => Promise<boolean>
+
+export interface Environment {
+    comment?: string
+    name: string
+    value: string
+}
+
+export type SetEnvironment = (variables: Environment | Environment[]) => Promise<boolean>

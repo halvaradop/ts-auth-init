@@ -1,14 +1,14 @@
 import path from "path"
-import { readFile, writeFile } from "fs/promises"
+import { existsSync, readFileSync, writeFileSync } from "fs"
 import { promisify } from "util"
 import { exec } from "child_process"
 import { createSpinner } from "nanospinner"
 import { OutputConfiguration } from "commander"
 import { fileURLToPath } from "url"
 import { supportedFrameworks } from "./commands/init.js"
-import { existsSync } from "fs"
-import { CreateInternalSpinner } from "./types.js"
+import { CreateInternalSpinner, Environment, SetEnvironment } from "./types.js"
 import { DuplicateEnvironmentError } from "./errors.js"
+import * as y from "yoctocolors"
 
 /**
  * Create a promise to execute the command for installing
@@ -18,7 +18,7 @@ import { DuplicateEnvironmentError } from "./errors.js"
 export const execAsync = promisify(exec)
 
 export const { name, description, version } = JSON.parse(
-    await readFile(path.join(fileURLToPath(new URL(".", import.meta.url)), "../package.json"), "utf-8"),
+    readFileSync(path.join(fileURLToPath(new URL(".", import.meta.url)), "../package.json"), "utf-8"),
 )
 
 /**
@@ -36,47 +36,45 @@ export const configPath = (route: string = ""): string => {
 }
 
 /**
- * Sets up the environment variables used by the providers to ensure the correct
- * connection. These environment variables are mandatory for the proper functioning
- * of the authentication methods offered by Auth.js.
+ * Sets up the environment variables required by Auth.js to ensure the correct connection
+ * and work with its configuration.
  *
- * @param {string} envName - The name of the environment variable to set.
- * @param {string} value - The value to assign to the environment variable.
  */
-export const setEnvironment = (envName: string, value: string) => {
-    createInternalSpinner(
-        async () => {
-            const environmentPath = configPath(".env")
-            const existVariable = process.env[envName]
-            if (!existVariable) {
-                const envContent = await readFile(environmentPath, "utf-8")
-                const newLine = envContent.endsWith("\n") ? "" : "\n"
-                await writeFile(environmentPath, `${newLine}${envName}=${value}`, {
-                    flag: "a",
-                    encoding: "utf-8",
-                })
-            } else {
-                throw new DuplicateEnvironmentError()
-            }
-        },
-        {
-            initial: `Setting up the environment variable: ${envName}`,
-            success: `The environment variable ${envName} was successfully created.`,
-            error: `An error occurred while setting the environment variable ${envName}.`,
-            warning: `The environment variable ${envName} already exists.`,
-        },
+export const setEnvironment: SetEnvironment = async (variables) => {
+    const environments: Environment[] = []
+    if (variables instanceof Array) {
+        environments.push(...variables)
+    } else {
+        environments.push(variables)
+    }
+    const filters = await Promise.all(
+        environments.map(async ({ name, value, comment = "" }) => {
+            return await createInternalSpinner(
+                async () => {
+                    const environmentPath = configPath(".env")
+                    const existVariable = process.env[name]
+                    if (!existVariable) {
+                        const envContent = readFileSync(environmentPath, "utf-8")
+                        const newLine = envContent.endsWith("\n") ? "" : "\n"
+                        const includesComment = comment ? `${newLine}\n${comment}\n` : newLine
+                        writeFileSync(environmentPath, `${includesComment}${name}=${value}`, {
+                            flag: "a",
+                            encoding: "utf-8",
+                        })
+                    } else {
+                        throw new DuplicateEnvironmentError()
+                    }
+                },
+                {
+                    initial: `Setting up the environment variable: ${name}`,
+                    success: `The environment variable ${name} was successfully created.`,
+                    error: `An error occurred while setting the environment variable ${name}.`,
+                    warning: `The environment variable ${name} already exists.`,
+                },
+            )
+        }),
     )
-}
-
-/**
- * Paints a message with a red color in the output terminal
- * using ANSI escape codes.
- *
- * @param str The message to be printed in red
- * @returns The colored message as a string
- */
-export const errorColor = (str: string): string => {
-    return `\x1b[31m${str}\x1b[0m`
+    return filters.some((filter) => !filter)
 }
 
 /**
@@ -86,7 +84,7 @@ export const errorColor = (str: string): string => {
  */
 export const guessFramework = async (): Promise<string | undefined> => {
     if (!existsSync(configPath("package.json"))) return undefined
-    const packageJson = JSON.parse(await readFile(configPath("package.json"), "utf-8"))
+    const packageJson = JSON.parse(readFileSync(configPath("package.json"), "utf-8"))
     if (!packageJson || (packageJson && !packageJson?.dependencies)) return undefined
     return Object.keys(packageJson.dependencies).find((dependency) =>
         supportedFrameworks.has(dependency) ? dependency : undefined,
@@ -101,20 +99,57 @@ export const configureOutput: OutputConfiguration = {
         process.stdout.write(error)
     },
     outputError: (error, write) => {
-        write(errorColor(error))
+        write(y.red(error))
     },
 }
 
-export const createInternalSpinner: CreateInternalSpinner = async (callback, { initial, success, error, warning }) => {
+/**
+ * Creates a spinner that runs while a process is executing and stops when the process finishes.
+ * It accepts multiple messages to be displayed during different stages of the process.
+ */
+export const createInternalSpinner: CreateInternalSpinner = async (
+    callback,
+    { initial, success = "", error = "", warning = "" },
+) => {
     const spinner = createSpinner(initial).start()
     try {
         await callback()
-        spinner.success({ text: success })
+        spinner.success({ text: y.green(success) })
+        return true
     } catch (e) {
         if (e instanceof DuplicateEnvironmentError) {
-            spinner.warn({ text: warning })
-            return
+            spinner.warn({ text: y.yellow(warning) })
+        } else {
+            spinner.error({ text: y.red(error) })
         }
-        spinner.error({ text: error })
+        return false
     }
+}
+
+/**
+ * Gets what is the package manager used at the time to execute the command.
+ *
+ * @source https://github.com/vercel/next.js/blob/canary/packages/create-next-app/helpers/get-pkg-manager.ts
+ * @returns {string} The package manager used in the project
+ * @example
+ * ```zsh
+ * # npm
+ * npx \@halvaradop/auth-init init
+ *
+ * # pnpm
+ * pnpm dlx \@halvaradop/auth-init init
+ * ```
+ */
+export const getPackageManager = (): string => {
+    const userAgent = process.env.npm_config_user_agent || ""
+    if (userAgent.startsWith("pnpm")) {
+        return "pnpm"
+    }
+    if (userAgent.startsWith("bun")) {
+        return "bun"
+    }
+    if (userAgent.startsWith("yarn")) {
+        return "yarn"
+    }
+    return "npm"
 }

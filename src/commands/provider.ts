@@ -81,31 +81,43 @@ const supportedProviders = [
     "Zoom",
 ]
 
+/**
+ * Initialize the configuration for a provider supported by Auth.js
+ *
+ * @param {OptionsCLI} options - The options to be used in the provider command
+ */
 export const provider = async ({ provider, list }: OptionsCLI) => {
     if (!provider || (provider && !supportedProviders.some((supported) => supported.toLowerCase() === provider))) {
-        const selectedProvider = await rawlist<string>({
+        provider = await rawlist<string>({
             message: "Select the provider to be configured",
             choices: list ? supportedProviders : supportedProviders.splice(0, 10),
         })
-        provider = selectedProvider
     }
-    await setEnvironment(`AUTH_${provider.toUpperCase()}_ID`, "YOUR_PROVIDER_ID")
-    await setEnvironment(`AUTH_${provider.toUpperCase()}_SECRET`, "YOUR_PROVIDER_SECRET")
+    const writeEnvironments = await setEnvironment([
+        {
+            comment: `# ENVIRONMENT VARIABLES FOR CLIENT-ID AND CLIENT-SECRET WHEN USING ${provider.toUpperCase()} OAUTH PROVIDER`,
+            name: `AUTH_${provider.toUpperCase()}_ID`,
+            value: "YOUR_PROVIDER_ID",
+        },
+        {
+            name: `AUTH_${provider.toUpperCase()}_SECRET`,
+            value: "YOUR_PROVIDER_SECRET",
+        },
+    ])
+    if (writeEnvironments) return
     console.log(
         `\nThe configuration for ${provider} provider has been initialized`,
-        `\nFor more information, visit https://authjs.dev/getting-started/providers/${provider.toLowerCase()}`,
+        `\nFor more information, visit https://authjs.dev/getting-started/providers/${provider.toLowerCase()}\n`,
     )
-    const framework = await guessFramework()
-    let path = supportedFrameworks.get(framework!)
+    let framework = await guessFramework()
     if (!framework) {
-        const selectedFramework = await select<string>({
+        framework = await select<string>({
             message: "Select the framework that you will use in your project",
             choices: [...supportedFrameworks.keys()],
         })
-        path = supportedFrameworks.get(selectedFramework)
     }
     console.log(
         `\nCopy the next line in your configuration file`,
-        `\nimport ${provider.at(0)?.toUpperCase()}${provider.substring(1)} from "${path}/providers/${provider.toLowerCase()}"`,
+        `\nimport ${provider.at(0)?.toUpperCase()}${provider.substring(1)} from "${supportedFrameworks.get(framework)}/providers/${provider.toLowerCase()}"`,
     )
 }

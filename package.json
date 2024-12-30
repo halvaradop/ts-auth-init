@@ -46,7 +46,8 @@
   "dependencies": {
     "@inquirer/prompts": "^5.5.0",
     "commander": "^12.1.0",
-    "nanospinner": "^1.2.2"
+    "nanospinner": "^1.2.2",
+    "yoctocolors": "^2.1.1"
   },
   "files": [
     "dist"

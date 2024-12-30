@@ -3,14 +3,17 @@ import { execAsync, setEnvironment } from "../utils.js"
 import { OptionsCLI } from "@/types.js"
 
 /**
- * Sets up the environment variables used throughout the project, initially creating
- * the AUTH_SECRET variable. This is mandatory for using auth.js without considering
- * the framework.
+ * Setup the AUTH_SECRET environment variable  which is mandatory for using Auth.js
+ * without considering the framework.
  */
 export const secret = async ({ size = 32 }: OptionsCLI): Promise<void> => {
     try {
         const { stdout: randomized } = await execAsync(`openssl rand -base64 ${size}`)
-        setEnvironment("AUTH_SECRET", randomized)
+        await setEnvironment({
+            comment: "# AUTH-SECRET IS A RANDOM TOKEN TO ENCRYPT TOKENS, EMAILS AND HASHES",
+            name: "AUTH_SECRET",
+            value: randomized,
+        })
     } catch (error) {
         createSpinner("Error").error({ text: "An error occurred while generating the secret key" })
     }

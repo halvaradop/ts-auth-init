@@ -78,7 +78,7 @@ export const setEnvironment: SetEnvironment = async (variables) => {
  * @returns {Promise<string | undefined>} - The name of the framework guessed
  */
 export const guessFramework = async (): Promise<string | undefined> => {
-    if (!existsSync(configPath("package.json"))) return undefined
+    if (!exists("package.json")) return undefined
     const packageJson = JSON.parse(readFileSync(configPath("package.json"), "utf-8"))
     if (!packageJson || (packageJson && !packageJson?.dependencies)) return undefined
     return Object.keys(packageJson.dependencies).find((dependency) =>
@@ -148,3 +148,11 @@ export const getPackageManager = (): string => {
     }
     return "npm"
 }
+
+/**
+ * Checks if the given path exists.
+ *
+ * @param {string} path - The path to check for existence.
+ * @returns {boolean} `true` if the path exists, otherwise `false`.
+ */
+export const exists = (path: string): boolean => existsSync(configPath(path))

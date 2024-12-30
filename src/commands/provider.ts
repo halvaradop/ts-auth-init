@@ -1,7 +1,8 @@
 import { OptionsCLI } from "@/types.js"
-import { guessFramework, setEnvironment } from "../utils.js"
-import { rawlist, select } from "@inquirer/prompts"
+import { configPath, exists, guessFramework, setEnvironment } from "../utils.js"
+import { confirm, rawlist, select } from "@inquirer/prompts"
 import { supportedFrameworks } from "./init.js"
+import { writeFileSync } from "fs"
 
 const supportedProviders = [
     "GitHub",
@@ -92,6 +93,12 @@ export const provider = async ({ provider, list }: OptionsCLI) => {
             message: "Select the provider to be configured",
             choices: list ? supportedProviders : supportedProviders.splice(0, 10),
         })
+    }
+    if (!exists(".env")) {
+        if (!(await confirm({ message: "File .env not found. Would you like to create it?" }))) {
+            return
+        }
+        writeFileSync(configPath(".env"), "", { flag: "w" })
     }
     const writeEnvironments = await setEnvironment([
         {

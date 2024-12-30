@@ -41,12 +41,7 @@ export const configPath = (route: string = ""): string => {
  *
  */
 export const setEnvironment: SetEnvironment = async (variables) => {
-    const environments: Environment[] = []
-    if (variables instanceof Array) {
-        environments.push(...variables)
-    } else {
-        environments.push(variables)
-    }
+    const environments: Environment[] = variables instanceof Array ? variables : [variables]
     const filters = await Promise.all(
         environments.map(async ({ name, value, comment = "" }) => {
             return await createInternalSpinner(

@@ -37,15 +37,15 @@
   "homepage": "https://github.com/halvaradop/auth-init#readme",
   "devDependencies": {
     "@types/inquirer": "^9.0.7",
-    "@types/node": "^20.17.10",
-    "dotenv": "^16.4.7",
-    "prettier": "^3.4.2",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "@types/node": "^22.15.3",
+    "dotenv": "^16.5.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.2"
   },
   "dependencies": {
-    "@inquirer/prompts": "^5.5.0",
-    "commander": "^12.1.0",
+    "@inquirer/prompts": "^7.5.0",
+    "commander": "^13.1.0",
     "nanospinner": "^1.2.2",
     "yoctocolors": "^2.1.1"
   },
